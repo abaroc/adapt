@@ -2,17 +2,11 @@
 define([
   'require',
   'core/origin',
-  './global/editorDataLoader',
-  './global/editorEventHub',
-  './global/editorSidebarLinkRouter',
-  './global/editorContentEditRouter',
-  './config/index',
-  './contentObject/index',
-  './course/index',
-  './extensions/index',
-  './menuSettings/index',
-  './selectTheme/index'
-], function(require, Origin, EditorData, EventHub, LinkRouter) {
+  './editorDataLoader',
+  './editorEventHub',
+  './editorSidebarLinkRouter',
+  './EditorPageRouter',
+], function(require, Origin, EditorData, EventHub, LinkRouter, PageRouter) {
   /**
   * Load the appropriate editor data when needed
   */
@@ -23,6 +17,7 @@ define([
   });
   Origin.on({
     'router:editor': EventHub,
-    'sidebar:link': LinkRouter
+    'sidebar:link': LinkRouter,
+    'editor': PageRouter
   });
 });

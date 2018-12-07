@@ -41,6 +41,7 @@ define(function(require){
         'projects:sort:asc': function() { this.doSort('asc'); },
         'projects:sort:desc': function() { this.doSort('desc'); },
         'projects:sort:updated': function() { this.doSort('updated'); },
+        'sidebar:action:createproject': this.createProject,
         'sidebar:link': this.switchCollection
       });
 
@@ -226,6 +227,10 @@ define(function(require){
     remove: function() {
       $('.contentPane').off('scroll', this._doLazyScroll);
       OriginView.prototype.remove.apply(this, arguments);
+    },
+
+    createProject: function() {
+      Origin.router.navigateTo('editor/config')
     }
   }, {
     template: 'projects'
