@@ -15,17 +15,6 @@ define(function(require) {
   var EditorView = require('./views/editorView');
   var Origin = require('core/origin');
 
-  var EditorEditSidebarOptions = function(data) {
-    return {
-      // backButton: { label: 'Back' },
-      actions: [
-        { name: 'save', type: 'primary', labels: { default: 'app.buttons.save' } },
-        { name: 'cancel', type: 'secondary', label: 'app.buttons.cancel' },
-      ],
-      fieldsets: data.fieldsets || []
-    };
-  };
-
   function EditorPageRouter(data) {
     switch(data.type) {
       case 'project':
@@ -48,14 +37,6 @@ define(function(require) {
       case 'extensions':
         return loadExtensions(data);
     }
-  }
-
-  function loadEditorConfig(data) {
-    fetchModel('config', function(model) {
-      var form = Origin.scaffold.buildForm({ model: model });
-      EditorHelpers.setContentSidebar({ fieldsets: form.fieldsets });
-      Origin.contentPane.setView(EditorConfigEditView, { model: model, form: form });
-    });
   }
 
   function loadContentObjectStructure(data) {
@@ -92,38 +73,52 @@ define(function(require) {
   }
 
   function loadExtensions(data) {
-    Origin.sidebar.update({ backButton: { label: "Back to course" } });
-    Origin.contentPane.setView(EditorExtensionsEditView, { model: new Backbone.Model({ _id: Origin.location.route1 }) });
+    updateSidebar({ backButton: { label: "Back to course" } });
+    updateView(EditorExtensionsEditView, { model: new Backbone.Model({ _id: Origin.location.route1 }) });
   }
 
   function loadMenuPicker(data) {
     fetchModel('config', function(model) {
-      EditorHelpers.setContentSidebar();
-      Origin.contentPane.setView(EditorMenuSettingsEditView, { model: model });
+      updateContentSidebar();
+      updateView(EditorMenuSettingsEditView, { model: model });
     });
   }
 
   function loadThemePicker(data) {
     fetchModel('config', function(model) {
-      EditorHelpers.setContentSidebar();
-      Origin.contentPane.setView(EditorThemeCollectionView, { model: model });
+      updateContentSidebar();
+      updateView(EditorThemeCollectionView, { model: model });
     });
   }
+
+
+
+
+
+
 
   function loadCourseEdit() {
     // FIXME need to fetch config to ensure scaffold has the latest extensions data
     CoreHelpers.multiModelFetch([ createModel('course'), Origin.editor.data.config ], function(data) {
       var form = Origin.scaffold.buildForm({ model: data.course });
-      EditorHelpers.setContentSidebar({ fieldsets: form.fieldsets });
-      Origin.contentPane.setView(EditorCourseEditView, { model: data.course, form: form });
+      updateContentSidebar(form.fieldsets);
+      updateView(EditorCourseEditView, { model: data.course, form: form });
+    });
+  }
+
+  function loadEditorConfig(data) {
+    fetchModel(data.type, data.id function(model) {
+      var form = Origin.scaffold.buildForm({ model: model });
+      updateContentSidebar(form.fieldsets);
+      updateView(EditorConfigEditView, { model: model, form: form });
     });
   }
 
   function loadContentEdit(data) {
     fetchModel(data.type, data.id, function(model) {
       var form = Origin.scaffold.buildForm({ model: model });
-      EditorHelpers.setContentSidebar({ fieldsets: form.fieldsets });
-      Origin.contentPane.setView(EditorContentView, { model: model, form: form });
+      updateContentSidebar(form.fieldsets);
+      updateView(EditorContentView, { model: model, form: form });
     });
   }
 
@@ -133,9 +128,14 @@ define(function(require) {
       displayTitle: Origin.l10n.t('app.placeholdernewcourse')
     });
     var form = Origin.scaffold.buildForm({ model: model });
-    EditorHelpers.setContentSidebar({ fieldsets: form.fieldsets });
-    Origin.contentPane.setView(EditorCourseEditView, { model: model, form: form });
+    updateContentSidebar(form.fieldsets);
+    updateView(EditorCourseEditView, { model: model, form: form });
   }
+
+
+
+
+
 
   function fetchModel(type, id, done) {
     if(typeof id === 'function') done = id;
@@ -154,12 +154,22 @@ define(function(require) {
     }
   }
 
+  function updateContentSidebar(fieldsets) {
+    updateSidebar({
+      actions: [
+        { name: 'save', type: 'primary', labels: { default: 'app.buttons.save' } },
+        { name: 'cancel', type: 'secondary', label: 'app.buttons.cancel' },
+      ],
+      fieldsets: fieldsets || []
+    });
+  }
+
   function updateSidebar(options) {
     Origin.sidebar.update(options);
   }
 
-  function updateView(options) {
-
+  function updateView(ViewClass, options) {
+    Origin.contentPane.setView(ViewClass, options);
   }
 
   return EditorPageRouter;
