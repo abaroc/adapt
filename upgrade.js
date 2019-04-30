@@ -195,9 +195,9 @@ function doUpdate(data) {
             autosync: true
           });
           migrator.list().then(function(migrations) {
-            console.log('migrator.list', migrations);
             var migrationsRan = 0;
             async.everySeries(migrations, function(migration, callback) {
+              console.log(`${migration.name}: ${migration.state} (${migration.state === 'up'})`);
               if(migration.state === 'up') {
                 return callback();
               }
