@@ -177,22 +177,26 @@ function doUpdate(data) {
       });
     },
     function runMigrations(callback) {
+      console.log('runMigrations');
       installHelpers.syncMigrations(function(err, migrations) {
         if(err) {
           return callback(err);
         }
+        console.log('syncMigrations');
         installHelpers.getMigrationConfig(function(err, config) {
           if(err){
             return callback(err);
           }
+          console.log('getMigrationConfig');
+          console.log(JSON.stringify(config,null,2));
           var migrator = new migrateMongoose({
             migrationsPath: config.migrationsDir,
             dbConnectionUri: config.dbConnectionUri,
             autosync: true
           });
           migrator.list().then(function(migrations) {
+            console.log('migrator.list', migrations);
             var migrationsRan = 0;
-            console.log(migrations);
             async.everySeries(migrations, function(migration, callback) {
               if(migration.state === 'up') {
                 return callback();
@@ -212,7 +216,9 @@ function doUpdate(data) {
               }
               callback();
             });
-          }).catch(callback);
+          }).catch(e => {
+
+          });
         });
       })
     }
