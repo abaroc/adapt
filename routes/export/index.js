@@ -69,7 +69,7 @@ server.get('/export/:tenant/:course', function (req, res, next) {
         if (error) {
           return handleError(error, res);
         } else {
-          plugin.export(course, req, res, function (error, result) {
+          plugin.export(course, function (error, result) {
             if (error) {
               logger.log('error', 'Unable to export:', error);
               return res.status(500).json({

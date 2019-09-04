@@ -19,7 +19,7 @@ let EXPORT_DIR;
 let TENANT_ID;
 let COURSE_ID;
 
-function exportCourse(pCourseId, request, response, next) {
+function exportCourse(pCourseId, options, next) {
   self = this;
   const currentUser = usermanager.getCurrentUser();
 
