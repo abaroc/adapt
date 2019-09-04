@@ -23,10 +23,14 @@ function exportCourse(pCourseId, options, next) {
   self = this;
   const currentUser = usermanager.getCurrentUser();
 
+  if(typeof options === 'function') {
+    next = options;
+    options = {};
+  }
   TENANT_ID = currentUser.tenant._id;
   COURSE_ID = pCourseId;
   COURSE_DIR = path.join(FRAMEWORK_ROOT_DIR, Constants.Folders.AllCourses, TENANT_ID, COURSE_ID);
-  EXPORT_DIR = path.join(configuration.tempDir, configuration.getConfig('masterTenantID'), Constants.Folders.Exports, currentUser._id);
+  EXPORT_DIR = options.outputdir || path.join(configuration.tempDir, configuration.getConfig('masterTenantID'), Constants.Folders.Exports, currentUser._id);
 
   async.auto({
     ensureExportDir: ensureExportDir,
